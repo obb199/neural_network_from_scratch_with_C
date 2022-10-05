@@ -22,7 +22,6 @@ bool activation_sigmoid(int lines, int cols, double **matrix){
         return false;
     }
 
-    double sigmoid;
     for(int i = 0; i < lines; i++){
         for (int j = 0; j < cols; j++){
             matrix[i][j] = 1/(1+(pow(2.718281828459, -matrix[i][j])));
