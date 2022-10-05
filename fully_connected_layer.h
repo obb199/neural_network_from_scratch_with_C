@@ -19,8 +19,8 @@ struct layer{
 
 bool layer_init(int, int, char, struct layer *);
 bool layer_forward(int, double**, struct layer *);
-double** layer_backward_last_layer(int batch_size, double** errors, double learning_rate, struct layer * actual_layer);
-double** layer_backward_general(int batch_size, double learning_rate, struct layer * actual_layer, double** last_computed_gradient);
+double** layer_backward_last_layer(int, double**, double, struct layer *);
+double** layer_backward_general(int, double, struct layer *, double**);
 bool layer_description(struct layer *);
 
 #endif // _FULLY_CONECTED_LAYER_H
