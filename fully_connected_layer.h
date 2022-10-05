@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "matrix_operations.h"
 #include "activations.h"
+#include "derivatives.h"
 
 struct layer{
     int n_inputs;
