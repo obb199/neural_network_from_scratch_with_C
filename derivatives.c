@@ -1,6 +1,7 @@
-#include "activations.h"
+#include "derivatives.h"
 
-bool activation_relu(int lines, int cols, double **matrix){
+
+bool derivative_relu(int lines, int cols, double **matrix){
     if (lines <= 0 || cols <= 0 || matrix == NULL){
         return false;
     }
@@ -9,6 +10,8 @@ bool activation_relu(int lines, int cols, double **matrix){
         for (int j = 0; j < cols; j++){
             if (matrix[i][j] < 0){
                 matrix[i][j] = 0;
+            }else{
+                matrix[i][j] = 1;
             }
         }
     }
@@ -17,7 +20,7 @@ bool activation_relu(int lines, int cols, double **matrix){
 }
 
 
-bool activation_sigmoid(int lines, int cols, double **matrix){
+bool derivative_sigmoid(int lines, int cols, double **matrix){
     if (lines <= 0 || cols <= 0 || matrix == NULL){
         return false;
     }
@@ -25,7 +28,8 @@ bool activation_sigmoid(int lines, int cols, double **matrix){
     double sigmoid;
     for(int i = 0; i < lines; i++){
         for (int j = 0; j < cols; j++){
-            matrix[i][j] = 1/(1+(pow(2.718281828459, -matrix[i][j])));
+            sigmoid = 1/(1+(pow(2.718281828459, -matrix[i][j])));
+            matrix[i][j] = sigmoid*(1 - sigmoid);
         }
     }
 
@@ -33,14 +37,14 @@ bool activation_sigmoid(int lines, int cols, double **matrix){
 }
 
 
-bool activation_tanh(int lines, int cols, double **matrix){
+bool derivative_tanh(int lines, int cols, double **matrix){
     if (lines <= 0 || cols <= 0 || matrix == NULL){
         return false;
     }
 
     for(int i = 0; i < lines; i++){
         for (int j = 0; j < cols; j++){
-            matrix[i][j] = tanh(matrix[i][j]);
+            matrix[i][j] = 1 - pow(tanh(matrix[i][j]), 2);
         }
     }
 
