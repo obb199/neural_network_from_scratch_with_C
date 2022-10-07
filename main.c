@@ -9,9 +9,9 @@ int main(){
     layer_init(2, 2, 'r', &l2);
     layer_init(2, 2, 'r', &l3);
 
-    matrix data;
-    matrix_init(4, 3, &data);
     int batch_size = 16;
+    matrix data;
+    matrix_init(batch_size, 3, &data);
 
     for(int i = 0; i < batch_size; i++){
         data.values[i][0] = i;
@@ -53,8 +53,6 @@ int main(){
     matrix_print(&expected_output);
     printf("\n");
     matrix_print(&l3.output);
-
-
 
     return 0;
 }
