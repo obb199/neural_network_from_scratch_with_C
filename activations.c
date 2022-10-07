@@ -1,14 +1,14 @@
 #include "activations.h"
 
-bool activation_relu(int lines, int cols, double **matrix){
-    if (lines <= 0 || cols <= 0 || matrix == NULL){
+bool activation_relu(matrix *output_layer){
+    if (output_layer == NULL){
         return false;
     }
 
-    for(int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            if (matrix[i][j] < 0){
-                matrix[i][j] = 0;
+    for(int i = 0; i < output_layer->rows; i++){
+        for (int j = 0; j < output_layer->cols; j++){
+            if (output_layer->values[i][j] < 0){
+                output_layer->values[i][j] = 0;
             }
         }
     }
@@ -17,14 +17,14 @@ bool activation_relu(int lines, int cols, double **matrix){
 }
 
 
-bool activation_sigmoid(int lines, int cols, double **matrix){
-    if (lines <= 0 || cols <= 0 || matrix == NULL){
+bool activation_sigmoid(matrix *output_layer){
+    if (output_layer == NULL){
         return false;
     }
 
-    for(int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            matrix[i][j] = 1/(1+(pow(2.718281828459, -matrix[i][j])));
+    for(int i = 0; i < output_layer->rows; i++){
+        for (int j = 0; j < output_layer->cols; j++){
+            output_layer->values[i][j] = 1/(1+(pow(2.718281828459, -output_layer->values[i][j])));
         }
     }
 
@@ -32,14 +32,14 @@ bool activation_sigmoid(int lines, int cols, double **matrix){
 }
 
 
-bool activation_tanh(int lines, int cols, double **matrix){
-    if (lines <= 0 || cols <= 0 || matrix == NULL){
+bool activation_tanh(matrix *output_layer){
+    if (output_layer == NULL){
         return false;
     }
 
-    for(int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            matrix[i][j] = tanh(matrix[i][j]);
+    for(int i = 0; i < output_layer->rows; i++){
+        for (int j = 0; j < output_layer->cols; j++){
+            output_layer->values[i][j] = tanh(output_layer->values[i][j]);
         }
     }
 

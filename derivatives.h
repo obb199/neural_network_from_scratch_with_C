@@ -1,13 +1,10 @@
 #ifndef _DERIVATIVES_H
 #define  _DERIVATIVES_H
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
+#include "matrix_operations.h"
 
-bool derivative_relu(int, int, double**);
-bool derivative_sigmoid(int, int, double**);
-bool derivative_tanh(int, int, double**);
+bool derivative_relu(matrix *);
+bool derivative_sigmoid(matrix *);
+bool derivative_tanh(matrix *);
 
 #endif //  _DERIVATIVES_H
-

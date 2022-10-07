@@ -1,12 +1,10 @@
 #ifndef _ACTIVATIONS_H
 #define _ACTIVATIONS_H
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
+#include "matrix_operations.h"
 
-bool activation_relu(int, int, double**);
-bool activation_sigmoid(int, int, double**);
-bool activation_tanh(int, int, double**);
+bool activation_relu(matrix *);
+bool activation_sigmoid(matrix *);
+bool activation_tanh(matrix *);
 
 #endif // _ACTIVATIONS_H

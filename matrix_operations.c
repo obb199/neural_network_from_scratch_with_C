@@ -1,194 +1,79 @@
 #include "matrix_operations.h"
 
 
-double** matrix_allocation(int lines_m1, int cols_m1){
-    if (lines_m1 <= 0 || cols_m1 <= 0){
+double** pointer_allocation(int rows, int cols){
+    if (rows <= 0 || cols <= 0){
         return NULL;
     }
 
-    double **m1 = malloc(lines_m1 * sizeof(double *));
+    double **matrix_pointer = malloc(rows * sizeof(double *));
 
-    if (m1 == NULL) return NULL;
+    if (matrix_pointer == NULL) return NULL;
 
-    for (int i = 0; i < lines_m1; i++){
-        m1[i] = malloc(cols_m1 * sizeof(double));
-        if (m1[i] == NULL) return NULL;
+    for (int i = 0; i < rows; i++){
+        matrix_pointer[i] = malloc(cols * sizeof(double));
+        if (matrix_pointer[i] == NULL) return NULL;
     }
 
-    return m1;
+    return matrix_pointer;
 }
 
 
-bool matrix_desallocation(int lines_m1, int cols_m1, double** m1){
-    if (lines_m1 <= 0 || cols_m1 <= 0 || m1 == NULL) return false;
+bool pointer_desallocation(int rows, int cols, double** matrix_pointer){
+    if (rows <= 0 || cols <= 0 || matrix_pointer == NULL) return false;
 
-    for(int i = 0; i < lines_m1; i++){
-        free(m1[i]);
+    for(int i = 0; i < rows; i++){
+        free(matrix_pointer[i]);
     }
-    free(m1);
+    free(matrix_pointer);
 
     return true;
 }
 
 
-
-bool matrix_sum(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2, int lines_m3, int cols_m3, double **m3){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||
-        lines_m2 <= 0 || cols_m2 <= 0 ||
-        lines_m3 <= 0 || cols_m3 <= 0 ||
-        lines_m1 != lines_m2 || cols_m1 != cols_m2 ||
-        lines_m1 != lines_m3 || cols_m1 != cols_m3 ||
-        m1 == NULL || m2 == NULL || m3 == NULL){
+bool matrix_init(int rows, int cols, matrix *m){
+    if (rows <= 0 || cols <= 0 || m == NULL){
         return false;
     }
 
-    for(int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m3[i][j] = m1[i][j] + m2[i][j];
-        }
-    }
+    m->rows = rows;
+    m->cols = cols;
+    m->values = pointer_allocation(rows, cols);
 
-    return true;
+    if (m->values != NULL) return true;
+    return false;
 }
 
 
-bool matrix_subtraction(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2, int lines_m3, int cols_m3, double **m3){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||
-        lines_m2 <= 0 || cols_m2 <= 0 ||
-        lines_m3 <= 0 || cols_m3 <= 0 ||
-        lines_m1 != lines_m2 || cols_m1 != cols_m2 ||
-        lines_m1 != lines_m3 || cols_m1 != cols_m3 ||
-        m1 == NULL || m2 == NULL || m3 == NULL){
+bool matrix_desallocation(matrix *m){
+    if (m == NULL) return false;
+
+    pointer_desallocation(m->rows, m->cols, m->values);
+    free(m);
+
+    return true;
+
+}
+
+
+bool matrix_print(matrix * m){
+    if (m == NULL){
         return false;
     }
 
-    for(int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m3[i][j] = m1[i][j] - m2[i][j];
+    for (int i = 0; i < m->rows; i++){
+        for (int j = 0; j < m->cols; j++){
+            printf("%.4f ", m->values[i][j]);
         }
+        printf("\n");
     }
 
     return true;
 }
 
 
-bool matrix_sum_columns(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2){
-    if(lines_m1 <= 0 || cols_m1 <= 0 ||
-       lines_m2 != 1|| cols_m1 != cols_m2 ||
-       m1 == NULL || m2 == NULL){
-        return false;
-    }
-
-    if (!matrix_zeros_init(lines_m2, cols_m2, m2)) return false;
-
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m2[0][j] += m1[i][j];
-        }
-    }
-
-    return true;
-}
-
-
-bool matrix_sum_column_by_line(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2, int lines_m3, int cols_m3, double **m3){
-    if(lines_m1 <= 0 || cols_m1 <= 0 ||
-       lines_m2 <= 0 || cols_m2 <= 0 ||
-       lines_m1 != lines_m3 ||
-       cols_m1 != cols_m3 ||
-       lines_m2 != 1 || cols_m2 != cols_m1){
-        return false;
-    }
-
-    for (int i = 0; i < lines_m1 ; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m3[i][j] = m1[i][j] + m2[0][j];
-        }
-    }
-
-    return true;
-}
-
-
-bool matrix_multiplication(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2, int lines_m3, int cols_m3, double **m3){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||
-        lines_m2 <= 0 || cols_m2 <= 0 ||
-        lines_m3 <= 0 || cols_m3 <= 0 ||
-        m1 == NULL || m2 == NULL || m3 == NULL ||
-        cols_m1 != lines_m2 || lines_m1 != lines_m3 || cols_m2 != cols_m3){
-        return false;
-    }
-
-    if (!(matrix_zeros_init(lines_m3, cols_m3, m3))){
-         return false;
-    }
-
-    for (register int i = 0; i < lines_m1; i++){
-        for (register int j = 0; j < cols_m2; j++){
-            for (register int k = 0; k < cols_m1; k++){
-                m3[i][j] +=  m1[i][k] * m2[k][j];
-            }
-        }
-    }
-
-    return true;
-}
-
-bool matrix_multiplication_by_constant(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2, double constant){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||
-        m1 == NULL || m2 == NULL ||
-        lines_m1 != lines_m2 || cols_m1 != cols_m2){
-        return false;
-    }
-
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m2[i][j] = constant*m1[i][j];
-        }
-    }
-
-    return true;
-}
-
-
-bool matrix_hadamart_product(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2, int lines_m3, int cols_m3, double **m3){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||lines_m2 <= 0 ||
-        lines_m1 != lines_m2 || lines_m1 != lines_m3 ||
-        cols_m1 != cols_m2 || cols_m1 != cols_m3 ||
-        m1 == NULL || m2 == NULL || m3 == NULL){
-        return false;
-    }
-
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m3[i][j] = m1[i][j] * m2[i][j];
-        }
-    }
-
-    return true;
-}
-
-
-bool matrix_transposition(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||
-        lines_m2 <= 0 || cols_m2 <= 0 ||
-        lines_m1 != cols_m2 || cols_m1 != lines_m2 ||
-        m1 == NULL || m2 == NULL){
-        return false;
-    }
-
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m2[j][i] = m1[i][j];
-        }
-    }
-
-    return true;
-}
-
-
-bool matrix_random_init(double min_value, double max_value, int seed, int precision, int lines_m1, int cols_m1, double **m1){
-    if (lines_m1 <= 0 || cols_m1 <= 0 || max_value == min_value || m1 == NULL){
+bool matrix_random_init(double min_value, double max_value, int seed, int precision, matrix *m){
+    if (max_value == min_value || m == NULL){
         return false;
     }
 
@@ -207,10 +92,10 @@ bool matrix_random_init(double min_value, double max_value, int seed, int precis
     double fractional_part_of_min_value = min_value - (int)min_value;
     double fractional_part_of_max_value = max_value - (int)max_value;
 
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m1[i][j] = rand()%((int)max_value - (int)min_value) + (int)min_value; //integer part
-            m1[i][j] += (rand()%(int)(pow(10, precision)))/pow(10, precision) + (fractional_part_of_min_value - fractional_part_of_max_value); //fractional part
+    for (int i = 0; i < m->rows; i++){
+        for (int j = 0; j < m->cols; j++){
+            m->values[i][j] = rand()%((int)max_value - (int)min_value) + (int)min_value; //integer part
+            m->values[i][j] += (rand()%(int)(pow(10, precision)))/pow(10, precision) + (fractional_part_of_min_value - fractional_part_of_max_value); //fractional part
         }
     }
 
@@ -218,14 +103,16 @@ bool matrix_random_init(double min_value, double max_value, int seed, int precis
 }
 
 
-bool matrix_zeros_init(int lines, int cols, double **m1){
-    if (lines <= 0 || cols <= 0 || m1 == NULL){
+bool matrix_sum(matrix *m1, matrix *m2, matrix *m3){
+    if (m1 == NULL || m2 == NULL || m3 == NULL ||
+        m1->rows != m2->rows || m1->cols != m2->cols ||
+        m1->rows != m3->rows || m1->cols != m3->cols){
         return false;
     }
 
-    for (int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            m1[i][j] = 0;
+    for(int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m3->values[i][j] = m1->values[i][j] + m2->values[i][j];
         }
     }
 
@@ -233,14 +120,16 @@ bool matrix_zeros_init(int lines, int cols, double **m1){
 }
 
 
-bool matrix_ones_init(int lines, int cols, double **m1){
-    if (lines <= 0 || cols <= 0 || m1 == NULL){
+bool matrix_subtraction(matrix *m1, matrix *m2, matrix *m3){
+    if (m1 == NULL || m2 == NULL || m3 == NULL ||
+        m1->rows != m2->rows || m1->cols != m2->cols ||
+        m1->rows != m3->rows || m1->cols != m3->cols){
         return false;
     }
 
-    for (int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            m1[i][j] = 1.0;
+    for(int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m3->values[i][j] = m1->values[i][j] - m2->values[i][j];
         }
     }
 
@@ -248,18 +137,58 @@ bool matrix_ones_init(int lines, int cols, double **m1){
 }
 
 
-bool matrix_identity_init(int lines_m1, int cols_m1, double **m1){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||
-    lines_m1 != cols_m1 || m1 == NULL){
+bool matrix_sum_columns(matrix *m1, matrix *m2){
+    if(m2->rows != 1|| m1->cols != m2->cols ||
+       m1 == NULL || m2 == NULL){
         return false;
     }
 
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            if (i == j){
-                m1[i][j] = 1;
-            }else{
-                m1[i][j] = 0;
+    if (!matrix_zeros_init(m2)) return false;
+
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m2->values[0][j] += m1->values[i][j];
+        }
+    }
+
+    return true;
+}
+
+
+bool matrix_sum_column_by_line(matrix *m1, matrix *m2, matrix *m3){
+    if(m1->rows != m3->rows ||
+       m1->cols != m3->cols ||
+       m1->cols != m2->cols ||
+       m2->rows != 1){
+        return false;
+    }
+
+    for (int i = 0; i < m1->rows ; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m3->values[i][j] = m1->values[i][j] + m2->values[0][j];
+        }
+    }
+
+    return true;
+}
+
+
+bool matrix_multiplication(matrix *m1, matrix *m2, matrix *m3){
+    if (m1 == NULL || m2 == NULL || m3 == NULL ||
+        m1->cols != m2->rows ||
+        m1->rows != m3->rows ||
+        m2->cols != m3->cols){
+        return false;
+    }
+
+    if (!matrix_zeros_init(m3)){
+         return false;
+    }
+
+    for (register int i = 0; i < m1->rows; i++){
+        for (register int j = 0; j < m2->cols; j++){
+            for (register int k = 0; k < m1->cols; k++){
+                m3->values[i][j] +=  m1->values[i][k] * m2->values[k][j];
             }
         }
     }
@@ -268,8 +197,107 @@ bool matrix_identity_init(int lines_m1, int cols_m1, double **m1){
 }
 
 
-bool matrix_randomize_lines(int iterations, int seed, int lines_m1, int cols_m1, double **m1){
-    if (lines_m1 <= 0 || cols_m1 <= 0 || m1 == NULL || iterations <= 0){
+bool matrix_multiplication_by_constant(matrix *m1, matrix *m2, double constant){
+    if (m1 == NULL || m2 == NULL ||
+        m1->rows != m2->rows || m1->cols != m2->cols){
+        return false;
+    }
+
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m2->cols; j++){
+            m2->values[i][j] = constant*m1->values[i][j];
+        }
+    }
+
+    return true;
+}
+
+
+bool matrix_hadamart_product(matrix *m1, matrix *m2, matrix *m3){
+    if (m1 == NULL || m2 == NULL || m3 == NULL ||
+        m1->rows != m2->rows || m1->rows != m3->rows ||
+        m1->cols != m2->cols || m1->cols != m3->cols){
+        return false;
+    }
+
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m3->values[i][j] = m1->values[i][j] * m2->values[i][j];
+        }
+    }
+
+    return true;
+}
+
+
+bool matrix_transposition(matrix *m1, matrix *m2){
+    if (m1 == NULL || m2 == NULL ||
+        m1->rows != m2->cols || m1->cols != m2->rows){
+        return false;
+    }
+
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m2->values[j][i] = m1->values[i][j];
+        }
+    }
+
+    return true;
+}
+
+
+bool matrix_zeros_init(matrix *m1){
+    if (m1 == NULL){
+        return false;
+    }
+
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m1->values[i][j] = 0;
+        }
+    }
+
+    return true;
+}
+
+
+
+bool matrix_ones_init(matrix *m1){
+    if (m1 == NULL){
+        return false;
+    }
+
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m1->values[i][j] = 1.0;
+        }
+    }
+
+    return true;
+}
+
+
+bool matrix_identity_init(matrix *m1){
+    if (m1 == NULL || m1->cols != m1->rows){
+        return false;
+    }
+
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            if (i == j){
+                m1->values[i][j] = 1;
+            }else{
+                m1->values[i][j] = 0;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+bool matrix_randomize_lines(int iterations, int seed, matrix *m1){
+    if (m1 == NULL || iterations <= 0){
         return false;
     }
 
@@ -282,13 +310,13 @@ bool matrix_randomize_lines(int iterations, int seed, int lines_m1, int cols_m1,
     int line1 = 0, line2 = 0;
     double aux;
     for(int i = 0; i < iterations; i++){
-        line1 = rand()%lines_m1;
-        line2 = rand()%lines_m1;
+        line1 = rand()%m1->rows;
+        line2 = rand()%m1->rows;
 
-        for (int j = 0; j < cols_m1; j++){
-            aux = m1[line1][j];
-            m1[line1][j] = m1[line2][j];
-            m1[line2][j] = aux;
+        for (int j = 0; j < m1->cols; j++){
+            aux = m1->values[line1][j];
+            m1->values[line1][j] = m1->values[line2][j];
+            m1->values[line2][j] = aux;
         }
     }
 
@@ -296,29 +324,29 @@ bool matrix_randomize_lines(int iterations, int seed, int lines_m1, int cols_m1,
 }
 
 
-bool matrix_normalization(int lines_m1, int cols_m1, double **m1){
-    if (lines_m1 <= 0 || cols_m1 <= 0 || m1 == NULL){
+bool matrix_normalization(matrix *m1){
+    if (m1 == NULL){
         return false;
     }
 
-    double max_values_per_column[cols_m1];
-    double min_values_per_column[cols_m1];
+    double max_values_per_column[m1->cols];
+    double min_values_per_column[m1->cols];
 
-    for (int i = 0; i < cols_m1; i++){
-        max_values_per_column[i] = m1[0][i];
-        min_values_per_column[i] = m1[0][i];
+    for (int i = 0; i < m1->cols; i++){
+        max_values_per_column[i] = m1->values[0][i];
+        min_values_per_column[i] = m1->values[0][i];
     }
 
-    for(int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            if (max_values_per_column[j] < m1[i][j]) max_values_per_column[j] = m1[i][j];
-            if (min_values_per_column[j] > m1[i][j]) min_values_per_column[j] = m1[i][j];
+    for(int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            if (max_values_per_column[j] < m1->values[i][j]) max_values_per_column[j] = m1->values[i][j];
+            if (min_values_per_column[j] > m1->values[i][j]) min_values_per_column[j] = m1->values[i][j];
         }
     }
 
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m1[i][j] = (m1[i][j] - min_values_per_column[j])/(max_values_per_column[j] - min_values_per_column[j]);
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m1->values[i][j] = (m1->values[i][j] - min_values_per_column[j])/(max_values_per_column[j] - min_values_per_column[j]);
         }
     }
 
@@ -326,14 +354,16 @@ bool matrix_normalization(int lines_m1, int cols_m1, double **m1){
 }
 
 
-bool matrix_copy(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2){
-    if (lines_m1 <= 0 || cols_m1 <= 0 || lines_m2 <= 0 || cols_m2 <= 0 || m1 == NULL || m2 == NULL || lines_m1 != lines_m2 || cols_m1 != cols_m2){
+bool matrix_copy(matrix *m1, matrix *m2){
+    if (m1 == NULL || m2 == NULL ||
+        m1->rows != m2->rows ||
+        m1->cols != m2->cols){
         return false;
     }
 
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            m2[i][j] = m1[i][j];
+    for (int i = 0; i < m1->rows; i++){
+        for (int j = 0; j < m1->cols; j++){
+            m2->values[i][j] = m1->values[i][j];
         }
     }
 
@@ -341,43 +371,19 @@ bool matrix_copy(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_
 }
 
 
-bool matrix_print(int lines_m1, int cols_m1, double **m1){
-    if (lines_m1 <= 0 || cols_m1 <= 0 || m1 == NULL){
-        return false;
-    }
-
-    for (int i = 0; i < lines_m1; i++){
-        for (int j = 0; j < cols_m1; j++){
-            printf("%.3f ", m1[i][j]);
-        }
-        printf("\n");
-    }
-
-    return true;
-}
-
-
-bool matrix_pointer_verify(double **m1){
-    if (m1 == NULL) return false;
-    return true;
-}
-
-
-bool matrix_reshape(int lines_m1, int cols_m1, double **m1, int lines_m2, int cols_m2, double **m2){
-    if (lines_m1 <= 0 || cols_m1 <= 0 ||
-        lines_m2 <= 0 || cols_m2 <= 0 ||
-        m1 == NULL || m2 == NULL ||
-        lines_m1*cols_m1 != lines_m2*cols_m2){
+bool matrix_reshape(matrix *m1, matrix *m2){
+    if (m1 == NULL || m2 == NULL ||
+        m1->rows*m1->cols != m2->rows*m2->cols){
          return false;
     }
 
     int actual_line = 0;
     int actual_col = 0;
 
-    for(int i = 0; i < lines_m1; i++){
-        for(int j = 0; j < cols_m1; j++){
-            m2[actual_line][actual_col] = m1[i][j];
-            if (actual_col == cols_m2-1){
+    for(int i = 0; i < m1->rows; i++){
+        for(int j = 0; j < m1->cols; j++){
+            m2->values[actual_line][actual_col] = m1->values[i][j];
+            if (actual_col == m2->cols-1){
                 actual_col = 0;
                 actual_line += 1;
             }else{

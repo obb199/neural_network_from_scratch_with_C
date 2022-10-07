@@ -1,17 +1,17 @@
 #include "derivatives.h"
 
 
-bool derivative_relu(int lines, int cols, double **matrix){
-    if (lines <= 0 || cols <= 0 || matrix == NULL){
+bool derivative_relu(matrix *result){
+    if (result == NULL){
         return false;
     }
 
-    for(int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            if (matrix[i][j] < 0){
-                matrix[i][j] = 0;
+    for(int i = 0; i < result->rows; i++){
+        for (int j = 0; j < result->cols; j++){
+            if (result->values[i][j] < 0){
+                result->values[i][j] = 0;
             }else{
-                matrix[i][j] = 1;
+                result->values[i][j] = 1;
             }
         }
     }
@@ -20,16 +20,16 @@ bool derivative_relu(int lines, int cols, double **matrix){
 }
 
 
-bool derivative_sigmoid(int lines, int cols, double **matrix){
-    if (lines <= 0 || cols <= 0 || matrix == NULL){
+bool derivative_sigmoid(matrix *result){
+    if (result == NULL){
         return false;
     }
 
     double sigmoid;
-    for(int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            sigmoid = 1/(1+(pow(2.718281828459, -matrix[i][j])));
-            matrix[i][j] = sigmoid*(1 - sigmoid);
+    for(int i = 0; i < result->rows; i++){
+        for (int j = 0; j < result->cols; j++){
+            sigmoid = 1/(1+(pow(2.718281828459, -1*result->values[i][j])));
+            result->values[i][j] = sigmoid*(1 - sigmoid);
         }
     }
 
@@ -37,14 +37,14 @@ bool derivative_sigmoid(int lines, int cols, double **matrix){
 }
 
 
-bool derivative_tanh(int lines, int cols, double **matrix){
-    if (lines <= 0 || cols <= 0 || matrix == NULL){
+bool derivative_tanh(matrix *result){
+    if (result == NULL){
         return false;
     }
 
-    for(int i = 0; i < lines; i++){
-        for (int j = 0; j < cols; j++){
-            matrix[i][j] = 1 - pow(tanh(matrix[i][j]), 2);
+    for(int i = 0; i < result->rows; i++){
+        for (int j = 0; j < result->cols; j++){
+            result->values[i][j] = 1 - pow(tanh(result->values[i][j]), 2);
         }
     }
 
