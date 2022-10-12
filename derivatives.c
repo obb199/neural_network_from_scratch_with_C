@@ -55,28 +55,6 @@ bool derivative_tanh(matrix *result){
 }
 
 
-bool derivative_softmax(matrix *result){
-    matrix jacobian_matrix;
-    matrix_init(result->rows, result->cols, &jacobian_matrix);
-
-    int i, j;
-    for(i = 0; i < result->rows; i++){
-        for(j = 0; j < result->cols; j++){
-            if (i==j){
-                jacobian_matrix.values[i][j] = result->values[i][j]*(1-result->values[i][j]);
-            }else{
-                jacobian_matrix.values[i][j] = -1*result->values[i][j]*result->values[i][j];
-            }
-        }
-    }
-
-    matrix_hadamart_product(result, &jacobian_matrix, result);
-    matrix_desallocation(&jacobian_matrix);
-
-    return true;
-}
-
-
 bool derivative_loss_mean_squared_error(matrix *output, matrix *expected_output, matrix *gradient_matrix){
     if (expected_output == NULL || output == NULL || gradient_matrix == NULL ||
         expected_output->rows != output->rows || expected_output->rows != gradient_matrix->rows ||
