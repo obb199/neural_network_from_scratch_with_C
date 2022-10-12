@@ -1,0 +1,21 @@
+--loss functions:
+    mean_squared_error - DONE
+    absolute error - DONE
+    binary_crossentropy -
+    categorical_crossentropy -
+
+--derivatives loss
+    derivative mse - DONE
+    derivative mae - DONE
+    derivative binary crossentropy -
+    derivative categorical crossentropy -
+
+
+--activation
+    softmax feedforward - DONE
+    softmax backpropagation - WORKING.....
+
+
+--csv operations
+    read -
+    write -

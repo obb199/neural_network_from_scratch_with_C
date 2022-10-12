@@ -6,8 +6,9 @@ bool derivative_relu(matrix *result){
         return false;
     }
 
-    for(int i = 0; i < result->rows; i++){
-        for (int j = 0; j < result->cols; j++){
+    int i, j;
+    for(i = 0; i < result->rows; i++){
+        for (j = 0; j < result->cols; j++){
             if (result->values[i][j] < 0){
                 result->values[i][j] = 0;
             }else{
@@ -26,8 +27,9 @@ bool derivative_sigmoid(matrix *result){
     }
 
     double sigmoid;
-    for(int i = 0; i < result->rows; i++){
-        for (int j = 0; j < result->cols; j++){
+    int i, j;
+    for(i = 0; i < result->rows; i++){
+        for (j = 0; j < result->cols; j++){
             sigmoid = 1/(1+(pow(2.718281828459, -1*result->values[i][j])));
             result->values[i][j] = sigmoid*(1 - sigmoid);
         }
@@ -42,9 +44,66 @@ bool derivative_tanh(matrix *result){
         return false;
     }
 
-    for(int i = 0; i < result->rows; i++){
-        for (int j = 0; j < result->cols; j++){
+    int i, j;
+    for(i = 0; i < result->rows; i++){
+        for (j = 0; j < result->cols; j++){
             result->values[i][j] = 1 - pow(tanh(result->values[i][j]), 2);
+        }
+    }
+
+    return true;
+}
+
+
+bool derivative_softmax(matrix *result){
+    matrix jacobian_matrix;
+    matrix_init(result->rows, result->cols, &jacobian_matrix);
+
+    int i, j;
+    for(i = 0; i < result->rows; i++){
+        for(j = 0; j < result->cols; j++){
+            if (i==j){
+                jacobian_matrix.values[i][j] = result->values[i][j]*(1-result->values[i][j]);
+            }else{
+                jacobian_matrix.values[i][j] = -1*result->values[i][j]*result->values[i][j];
+            }
+        }
+    }
+
+    matrix_hadamart_product(result, &jacobian_matrix, result);
+    matrix_desallocation(&jacobian_matrix);
+
+    return true;
+}
+
+
+bool derivative_loss_mean_squared_error(matrix *output, matrix *expected_output, matrix *gradient_matrix){
+    if (expected_output == NULL || output == NULL || gradient_matrix == NULL ||
+        expected_output->rows != output->rows || expected_output->rows != gradient_matrix->rows ||
+        expected_output->cols != output->cols || expected_output->cols != gradient_matrix->cols){
+        return false;
+    }
+
+    matrix_subtraction(output, expected_output, gradient_matrix);
+    matrix_multiplication_by_constant(gradient_matrix, gradient_matrix, 2.0/gradient_matrix->rows);
+
+    return true;
+}
+
+bool derivative_loss_absolute_error(matrix *output, matrix *expected_output, matrix *gradient_matrix){
+    if (expected_output == NULL || output == NULL || gradient_matrix == NULL ||
+        expected_output->rows != output->rows || expected_output->rows != gradient_matrix->rows ||
+        expected_output->cols != output->cols || expected_output->cols != gradient_matrix->cols){
+        return false;
+    }
+
+    for(int i = 0; i < gradient_matrix->rows; i++){
+        for (int j = 0; j < gradient_matrix->cols; j++){
+            if (output->values[i][j] >= expected_output->values[i][j]){
+                gradient_matrix->values[i][j] = 1;
+            }else{
+                gradient_matrix->values[i][j] = -1;
+            }
         }
     }
 

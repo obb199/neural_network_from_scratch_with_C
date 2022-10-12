@@ -6,5 +6,6 @@
 bool activation_relu(matrix *);
 bool activation_sigmoid(matrix *);
 bool activation_tanh(matrix *);
+bool activation_softmax(matrix *);
 
 #endif // _ACTIVATIONS_H
