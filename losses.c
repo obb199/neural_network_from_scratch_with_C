@@ -65,23 +65,3 @@ bool loss_binary_crossentropy(matrix *output, matrix *expected_output, double *l
     return true;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

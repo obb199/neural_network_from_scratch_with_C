@@ -1,13 +1,13 @@
 --loss functions:
     mean_squared_error - DONE
     absolute error - DONE
-    binary_crossentropy -
+    binary_crossentropy - DONE
     categorical_crossentropy -
 
 --derivatives loss
     derivative mse - DONE
     derivative mae - DONE
-    derivative binary crossentropy -
+    derivative binary crossentropy - DONE
     derivative categorical crossentropy -
 
 

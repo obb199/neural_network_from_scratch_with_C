@@ -87,3 +87,18 @@ bool derivative_loss_absolute_error(matrix *output, matrix *expected_output, mat
 
     return true;
 }
+
+bool derivative_loss_binary_crossentropy(matrix *output, matrix *expected_output, matrix *gradient_matrix) {
+    if (expected_output == NULL || output == NULL || gradient_matrix == NULL ||
+        expected_output->rows != output->rows || expected_output->rows != gradient_matrix->rows ||
+        expected_output->cols != output->cols || expected_output->cols != gradient_matrix->cols) {
+        return false;
+    }
+
+    int i;
+    for (i = 0; i < output->rows; i++){
+        gradient_matrix->values[i][0] = expected_output->values[i][0] - output->values[i][0];
+    }
+
+    return true;
+}
